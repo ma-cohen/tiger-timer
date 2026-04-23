@@ -135,8 +135,8 @@ fn fire_completion(kind: Kind, label: Option<&str>) {
             "Long break done. Back to work.".to_string(),
         ),
     };
-    notify::notify(title, &msg);
     notify::play_sound();
+    notify::notify(title, &msg);
 }
 
 /// Best-effort: is a daemon currently running (pid file locked)?

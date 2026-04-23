@@ -12,7 +12,12 @@ pub enum BreakKind {
     Long,
 }
 
-pub fn cmd_start(work_min: Option<u32>, label: Option<String>, force: bool) -> i32 {
+pub fn cmd_start(
+    work_min: Option<u32>,
+    work_seconds: Option<u32>,
+    label: Option<String>,
+    force: bool,
+) -> i32 {
     daemon::cleanup_stale();
     if let Ok(Some(s)) = load_state() {
         if !force && daemon::daemon_running() {
@@ -29,7 +34,13 @@ pub fn cmd_start(work_min: Option<u32>, label: Option<String>, force: bool) -> i
     }
 
     let cfg = load_config();
-    let secs = work_min.map(|m| (m as i64) * 60).unwrap_or(cfg.work_secs);
+    let secs = if let Some(s) = work_seconds {
+        s as i64
+    } else if let Some(m) = work_min {
+        (m as i64) * 60
+    } else {
+        cfg.work_secs
+    };
     let done_today = pomodoros_today();
     let state = State::new(Kind::Work, secs, label.clone(), done_today);
 

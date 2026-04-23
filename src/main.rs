@@ -45,8 +45,11 @@ enum Cmd {
 #[derive(Args, Debug)]
 struct StartArgs {
     /// Override work duration in minutes for this session.
-    #[arg(short, long, value_name = "MIN")]
+    #[arg(short, long, value_name = "MIN", conflicts_with = "seconds")]
     work: Option<u32>,
+    /// Override work duration in seconds for this session (e.g. quick tests).
+    #[arg(long, value_name = "SEC")]
+    seconds: Option<u32>,
     /// Optional label for this pomodoro.
     #[arg(short, long)]
     label: Option<String>,
@@ -111,7 +114,7 @@ fn main() {
             commands::cmd_help_overview();
             0
         }
-        Some(Cmd::Start(a)) => commands::cmd_start(a.work, a.label, a.force),
+        Some(Cmd::Start(a)) => commands::cmd_start(a.work, a.seconds, a.label, a.force),
         Some(Cmd::Break(a)) => {
             let kind = if a.long {
                 BreakKind::Long
